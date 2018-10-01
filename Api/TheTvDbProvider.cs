@@ -125,7 +125,7 @@ namespace Statistics.Api
                 return el.Descendants("Episode")
                     .Where(
                         x =>
-                            DateTime.Now.Date >=
+                            DateTimeOffset.Now.Date >=
                             Convert.ToDateTime(StringToDateTime(x.Descendants("FirstAired").FirstOrDefault()?.Value)))
                     .Sum(x => x.Descendants("SeasonNumber").Count(y => y.Value != "0"));
             }
@@ -141,17 +141,17 @@ namespace Statistics.Api
             }
         }
 
-        private DateTime StringToDateTime(string date)
+        private DateTimeOffset StringToDateTime(string date)
         {
             if (date.Length == 10)
             {
                 var year = int.Parse(date.Substring(0, 4));
                 var month = int.Parse(date.Substring(5, 2));
                 var day = int.Parse(date.Substring(8, 2));
-                return new DateTime(year, month, day);
+                return new DateTimeOffset(year, month, day, 0, 0, 0, TimeSpan.Zero);
             }
 
-            return DateTime.MaxValue;
+            return DateTimeOffset.MaxValue;
         }
 
         private string NormalizeLanguage(string language)

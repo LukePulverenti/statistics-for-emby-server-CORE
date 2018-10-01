@@ -78,7 +78,7 @@ namespace Statistics.ScheduledTasks
             var percentPerUser = 100 / (users.Count + 3);
             var numComplete = 0;
 
-            PluginConfiguration.LastUpdated = DateTime.Now.ToString("g");
+            PluginConfiguration.LastUpdated = DateTimeOffset.Now.ToString("g");
 
             numComplete++;
             progress.Report(percentPerUser * numComplete);

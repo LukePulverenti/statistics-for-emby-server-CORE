@@ -11,7 +11,7 @@ namespace Statistics.Models
     {
         public string Name { get; set; }
 
-        public DateTime Played { get; set; }
+        public DateTimeOffset Played { get; set; }
 
         public string UserName { get; set; }
 

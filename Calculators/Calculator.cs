@@ -79,7 +79,7 @@ namespace Statistics.Helpers
                 .Select(item => new LastSeenModel
                 {
                     Name = item.SeriesName + " - " + item.Name,
-                    Played = UserDataManager.GetUserData(User, item).LastPlayedDate ?? DateTime.MinValue,
+                    Played = UserDataManager.GetUserData(User, item).LastPlayedDate ?? DateTimeOffset.MinValue,
                     UserName = null
                 }.ToString()).ToList();
 
@@ -107,7 +107,7 @@ namespace Statistics.Helpers
                 .Select(item => new LastSeenModel
                 {
                     Name = item.Name,
-                    Played = UserDataManager.GetUserData(User, item).LastPlayedDate ?? DateTime.MinValue,
+                    Played = UserDataManager.GetUserData(User, item).LastPlayedDate ?? DateTimeOffset.MinValue,
                     UserName = null
                 }.ToString()).ToList();
 
@@ -581,7 +581,7 @@ namespace Statistics.Helpers
                 double maxSize = 0;
                 foreach (var show in shows)
                 {
-                    var episodes = GetAllEpisodes().Where(x => x.SeriesId == show.Id && x.Path != null);
+                    var episodes = GetAllEpisodes().Where(x => x.SeriesId == show.InternalId && x.Path != null);
                     try
                     {
                         var showSize = episodes.Sum(x =>
@@ -658,7 +658,7 @@ namespace Statistics.Helpers
                 long maxTime = 0;
                 foreach (var show in shows)
                 {
-                    var episodes = GetAllEpisodes().Where(x => x.SeriesId == show.Id && x.Path != null);
+                    var episodes = GetAllEpisodes().Where(x => x.SeriesId == show.InternalId && x.Path != null);
                     var showSize = episodes.Sum(x => x.RunTimeTicks ?? 0);
 
                     if (maxTime >= showSize) continue;
@@ -700,12 +700,12 @@ namespace Statistics.Helpers
             var movies = GetAllMovies();
             if (movies.Any())
             {
-                var oldest = movies.Where(x => x.PremiereDate.HasValue && x.PremiereDate.Value > DateTime.MinValue).Aggregate((curMin, x) => (curMin == null || (x.PremiereDate ?? DateTime.MaxValue) < curMin.PremiereDate ? x : curMin));
+                var oldest = movies.Where(x => x.PremiereDate.HasValue && x.PremiereDate.Value > DateTimeOffset.MinValue).Aggregate((curMin, x) => (curMin == null || (x.PremiereDate ?? DateTimeOffset.MaxValue) < curMin.PremiereDate ? x : curMin));
 
                 if (oldest != null && oldest.PremiereDate.HasValue)
                 {
                     var oldestDate = oldest.PremiereDate.Value;
-                    var numberOfTotalMonths = (DateTime.Now.Year - oldestDate.Year) * 12 + DateTime.Now.Month - oldestDate.Month;
+                    var numberOfTotalMonths = (DateTimeOffset.Now.Year - oldestDate.Year) * 12 + DateTimeOffset.Now.Month - oldestDate.Month;
                     var numberOfYears = Math.Floor(numberOfTotalMonths / (decimal)12);
                     var numberOfMonth = Math.Floor((numberOfTotalMonths / (decimal)12 - numberOfYears) * 12);
 
@@ -734,11 +734,11 @@ namespace Statistics.Helpers
             var movies = GetAllMovies();
             if (movies.Any())
             {
-                var youngest = movies.Where(x => x.PremiereDate.HasValue).Aggregate((curMax, x) => (curMax == null || (x.PremiereDate ?? DateTime.MinValue) > curMax.PremiereDate ? x : curMax));
+                var youngest = movies.Where(x => x.PremiereDate.HasValue).Aggregate((curMax, x) => (curMax == null || (x.PremiereDate ?? DateTimeOffset.MinValue) > curMax.PremiereDate ? x : curMax));
 
                 if (youngest != null)
                 {
-                    var numberOfTotalDays = DateTime.Now.Date - youngest.PremiereDate.Value;
+                    var numberOfTotalDays = DateTimeOffset.Now.Date - youngest.PremiereDate.Value;
                     valueLineOne = CheckMaxLength(numberOfTotalDays.Days == 0
                             ? $"Today"
                             : $"{CheckForPlural("day", numberOfTotalDays.Days, "", "", false)} ago");
@@ -764,14 +764,14 @@ namespace Statistics.Helpers
             var valueLineTwo = "";
             var id = "";
 
-            var movies = GetAllMovies().Where(x => x.DateCreated != DateTime.MinValue).ToList();
+            var movies = GetAllMovies().Where(x => x.DateCreated != DateTimeOffset.MinValue).ToList();
             if (movies.Any())
             {
                 var youngest = movies.Aggregate((curMax, x) => curMax == null || x.DateCreated > curMax.DateCreated ? x : curMax);
 
                 if (youngest != null)
                 {
-                    var numberOfTotalDays = DateTime.Now - youngest.DateCreated;
+                    var numberOfTotalDays = DateTimeOffset.Now - youngest.DateCreated;
 
                     valueLineOne =
                         CheckMaxLength(numberOfTotalDays.Days == 0
@@ -799,13 +799,13 @@ namespace Statistics.Helpers
             var valueLineTwo = "";
             var id = "";
 
-            var episodes = GetAllOwnedEpisodes().Where(x => x.DateCreated != DateTime.MinValue).ToList();
+            var episodes = GetAllOwnedEpisodes().Where(x => x.DateCreated != DateTimeOffset.MinValue).ToList();
             if (episodes.Any())
             {
                 var youngest = episodes.Aggregate((curMax, x) => (curMax == null || x.DateCreated > curMax.DateCreated ? x : curMax));
                 if (youngest != null)
                 {
-					var numberOfTotalDays = DateTime.Now.Date - youngest.DateCreated;
+					var numberOfTotalDays = DateTimeOffset.Now.Date - youngest.DateCreated;
 
                     valueLineOne =
                         CheckMaxLength(numberOfTotalDays.Days == 0

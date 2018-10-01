@@ -88,7 +88,7 @@ namespace statistics.Calculators
                 IsVirtualItem = false
             };
 
-            return LibraryManager.GetCount(query);
+            return LibraryManager.GetItemsResult(query).TotalRecordCount;
         }
 
         protected IEnumerable<BoxSet> GetBoxsets()
@@ -104,12 +104,12 @@ namespace statistics.Calculators
             {
                 IncludeItemTypes = new[] { typeof(Episode).Name },
                 Recursive = true,
-                ParentId = show.Id,
-                IsSpecialSeason = false,               
+                ParentIds = new[] { show.InternalId },
+                IsSpecialSeason = false,
                 IsVirtualItem = false
             };
 
-            var episodes = LibraryManager.GetItemList(query).OfType<Episode>().Where(e => e.PremiereDate <= DateTime.Now || e.PremiereDate == null);
+            var episodes = LibraryManager.GetItemList(query).OfType<Episode>().Where(e => e.PremiereDate <= DateTimeOffset.Now || e.PremiereDate == null);
             return episodes.Sum(r => (r.IndexNumberEnd == null || r.IndexNumberEnd < r.IndexNumber ? r.IndexNumber : r.IndexNumberEnd) - r.IndexNumber + 1) ?? 0;
         }
 
@@ -119,13 +119,13 @@ namespace statistics.Calculators
             {
                 IncludeItemTypes = new[] { typeof(Episode).Name },
                 Recursive = true,
-                ParentId = show.Id,
+                ParentIds = new[] { show.InternalId },
                 IsSpecialSeason = false,
                 IsVirtualItem = false,
                 IsPlayed = true
             };
 
-            var episodes = LibraryManager.GetItemList(query).OfType<Episode>().Where(e => e.PremiereDate <= DateTime.Now || e.PremiereDate == null);
+            var episodes = LibraryManager.GetItemList(query).OfType<Episode>().Where(e => e.PremiereDate <= DateTimeOffset.Now || e.PremiereDate == null);
             return episodes.Sum(r => (r.IndexNumberEnd ?? r.IndexNumber) - r.IndexNumber + 1) ?? 0;
         }
 
@@ -135,13 +135,13 @@ namespace statistics.Calculators
             {
                 IncludeItemTypes = new[] { typeof(Season).Name },
                 Recursive = true,
-                ParentId = show.Id,
+                ParentIds = new[] { show.InternalId },
                 IsSpecialSeason = true,
                 IsVirtualItem = false
             };
 
             var seasons = LibraryManager.GetItemList(query).OfType<Season>();
-            return seasons.Sum(x => x.Children.Count(e => e.PremiereDate <= DateTime.Now || e.PremiereDate == null));
+            return seasons.Sum(x => x.Children.Count(e => e.PremiereDate <= DateTimeOffset.Now || e.PremiereDate == null));
         }
 
         protected int GetPlayedSpecials(Series show)
@@ -150,14 +150,14 @@ namespace statistics.Calculators
             {
                 IncludeItemTypes = new[] { typeof(Season).Name },
                 Recursive = true,
-                ParentId = show.Id,
+                ParentIds = new[] { show.InternalId },
                 IsSpecialSeason = true,
-                MaxPremiereDate = DateTime.Now,
+                MaxPremiereDate = DateTimeOffset.Now,
                 IsVirtualItem = false
             };
 
             var seasons = LibraryManager.GetItemList(query).OfType<Season>();
-            return seasons.Sum(x => x.Children.Count(e => (e.PremiereDate <= DateTime.Now || e.PremiereDate == null) && e.IsPlayed(User)));
+            return seasons.Sum(x => x.Children.Count(e => (e.PremiereDate <= DateTimeOffset.Now || e.PremiereDate == null) && e.IsPlayed(User)));
         }
 
         #endregion
@@ -174,7 +174,7 @@ namespace statistics.Calculators
                     EnableImages = false
                 }
             };
-            
+
             return LibraryManager.GetItemList(query).OfType<T>();
         }
 
